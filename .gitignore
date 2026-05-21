@@ -1,0 +1,24 @@
+# Variables de entorno — NUNCA subir al repositorio
+.env
+
+# Entorno virtual Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Streamlit cache
+.streamlit/
