@@ -9,6 +9,9 @@ import sys
 import os
 import streamlit as st
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Asegurar que src/ está en el path para importar los módulos locales
 sys.path.insert(0, os.path.dirname(__file__))
 
