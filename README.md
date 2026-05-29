@@ -73,7 +73,7 @@ Soporte-IT-IA/
 
 ### Prerrequisitos
 
-- Cuenta AWS con acceso a Bedrock habilitado en `eu-south-2`
+- Cuenta AWS con acceso a Bedrock habilitado en `us-east-1`
 - Knowledge Base configurada en Bedrock con el manual subido a S3
 - Python 3.11+
 
@@ -101,9 +101,8 @@ Crear un archivo `.env` en la raíz del proyecto con:
 ```env
 AWS_ACCESS_KEY_ID=tu_access_key
 AWS_SECRET_ACCESS_KEY=tu_secret_key
-AWS_SESSION_TOKEN=tu_session_token
-AWS_DEFAULT_REGION=eu-south-2
-BEDROCK_MODEL_ID=arn:aws:bedrock:eu-south-2:CUENTA:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0
+AWS_DEFAULT_REGION=us-east-1
+BEDROCK_MODEL_ID=us.anthropic.claude-haiku-4-5-20251001-v1:0
 KNOWLEDGE_BASE_ID=tu_knowledge_base_id
 ```
 
@@ -130,27 +129,46 @@ Acceder en: `http://localhost:8501`
 
 ## ⚙️ Configuración AWS
 
-### 1. Habilitar modelos en Bedrock
+### 1. Crear usuario IAM
 
-En la consola AWS → Amazon Bedrock → Catálogo de modelos (`eu-south-2`), habilitar:
+En la consola AWS → IAM → Usuarios → Crear usuario:
+- Nombre: `BORJA`
+- Habilitar acceso a la consola
+- Adjuntar políticas:
+  - `AmazonBedrockFullAccess`
+  - `AmazonS3FullAccess`
+  - `AWSLambda_FullAccess`
+  - `S3VectorsFullAccess` (política personalizada)
+
+Obtener credenciales: IAM → Usuarios → BORJA → Credenciales de seguridad → Crear clave de acceso
+
+### 2. Habilitar modelos en Bedrock
+
+En la consola AWS → Amazon Bedrock → Catálogo de modelos (`us-east-1`), habilitar:
 - **Claude Haiku 4.5** (Anthropic) — modelo principal
-- **Amazon Titan Embeddings V2** — para indexar la Knowledge Base
+- **Amazon Nova Multimodal Embeddings** — para indexar la Knowledge Base
 
-### 2. Crear el bucket S3 y subir el manual
+### 3. Crear los buckets S3
 
-En la consola AWS → S3 → Create bucket:
-- Nombre: `soporte-it-ia-kb`
-- Región: `eu-south-2`
+En la consola AWS → S3 → Crear bucket (`us-east-1`):
+- `nnova1` — bucket de documentos (subir `manual_procedimientos.pdf`)
+- `nnova1-vectores` — bucket de vectores generados por Bedrock
 
-Subir `data/manual_procedimientos.pdf` al bucket.
+### 4. Crear la Knowledge Base en Bedrock
 
-### 3. Crear la Knowledge Base en Bedrock
-
-En la consola AWS → Bedrock → Knowledge Bases → Create:
-- **Nombre:** `soporte-it-kb`
-- **Fuente de datos:** S3 → bucket `soporte-it-ia-kb`
-- **Modelo de embeddings:** Amazon Titan Embeddings V2
+En la consola AWS → Bedrock → Knowledge Bases → Crear → Base de conocimientos con almacén vectorial:
+- **Nombre:** `SOPORTE-TIC`
+- **Origen de datos:** S3 → bucket `nnova1`
+- **Estrategia de análisis:** Analizador predeterminado de Amazon Bedrock
+- **Modelo de embeddings:** Amazon Nova Multimodal Embeddings
+- **Almacén vectorial:** Amazon S3 Vectors → bucket `nnova1-vectores`
 - Copiar el **Knowledge Base ID** generado y añadirlo al `.env`
+
+### 5. Sincronizar la Knowledge Base
+
+En Bedrock → Knowledge Bases → SOPORTE-TIC → Origen de datos → seleccionar origen → **Sincronizar**
+
+Esto lee el PDF de S3 y genera los vectores para la búsqueda semántica.`
 
 ---
 
