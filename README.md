@@ -132,7 +132,7 @@ Acceder en: `http://localhost:8501`
 ### 1. Crear usuario IAM
 
 En la consola AWS → IAM → Usuarios → Crear usuario:
-- Nombre: `BORJA`
+- Nombre: `USUARIO`
 - Habilitar acceso a la consola
 - Adjuntar políticas:
   - `AmazonBedrockFullAccess`
@@ -140,7 +140,7 @@ En la consola AWS → IAM → Usuarios → Crear usuario:
   - `AWSLambda_FullAccess`
   - `S3VectorsFullAccess` (política personalizada)
 
-Obtener credenciales: IAM → Usuarios → BORJA → Credenciales de seguridad → Crear clave de acceso
+Obtener credenciales: IAM → Usuarios → USUARIO → Credenciales de seguridad → Crear clave de acceso
 
 ### 2. Habilitar modelos en Bedrock
 
